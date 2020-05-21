@@ -21,7 +21,9 @@
   "homepage": "https://github.com/i-luka/nutrition#readme",
   "dependencies": {
     "@babel/polyfill": "^7.8.7",
+    "@mdi/font": "^5.2.45",
     "axios": "^0.19.2",
+    "material-design-icons-iconfont": "^5.0.1",
     "mini-css-extract-plugin": "^0.9.0",
     "vue": "^2.6.11",
     "vuetify": "^2.2.29",
