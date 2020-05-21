@@ -1,0 +1,51 @@
+{
+  "name": "@mozg3000/nutrition",
+  "version": "1.0.0",
+  "description": "Nutrition balance calculator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/i-luka/nutrition.git"
+  },
+  "keywords": [
+    "nutrition"
+  ],
+  "author": "Igor Lukoshnikov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/i-luka/nutrition/issues"
+  },
+  "homepage": "https://github.com/i-luka/nutrition#readme",
+  "dependencies": {
+    "@babel/polyfill": "^7.8.7",
+    "axios": "^0.19.2",
+    "mini-css-extract-plugin": "^0.9.0",
+    "vue": "^2.6.11",
+    "vuetify": "^2.2.29",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "babel-loader": "^8.1.0",
+    "copy-webpack-plugin": "^6.0.1",
+    "css-loader": "^3.5.3",
+    "deepmerge": "^4.2.2",
+    "fibers": "^5.0.0",
+    "file-loader": "^6.0.0",
+    "html-loader": "^1.1.0",
+    "html-webpack-plugin": "^4.3.0",
+    "node-sass": "^4.14.1",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "sass": "^1.26.5",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^1.2.1",
+    "vue-cli-plugin-vuetify": "^2.0.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
+}
