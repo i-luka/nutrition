@@ -11,17 +11,21 @@ export const app = {
     },
 	vuetify,
 	data: {
-		searchFood: '',
+		searchFood: '', // поле "добавить"
+		lastSearch: '',
 		urlBase: 'https://fs2.tvoydnevnik.com/api2/',
-		foodList: [],
-		result: {},
+		foodList: [],//массив с продуктами
+		table: [],//массив продуктов на столе
+		result: {}, // полный ответ от сервера
 		drawer: false,
 		focusedItem: null,
 		icon: 'add',
 		isLoading: false,
-		next: null
+		next: null, //для пагинации в листе "добавить"
+		nutrientsTitles,	
 	},
 	filters: {
+		//Удаляет название категории продукта, если есть таковое в его названии
 		shortName: function(value){
 			const hasGroupName = value.indexOf('[') !== -1
 			// console.log(hasGroupName)
@@ -32,6 +36,7 @@ export const app = {
 						value
 			return name;
 		},
+		//БЖУ подпись в списке "добавить"
 		PFCtitles: function(nutrientsShort){ 
 			let title = '';
 			for(let id in nutrientsShort){
@@ -44,7 +49,14 @@ export const app = {
 	methods: {
 		async searchHandler() {
 			this.isLoading = true;
+			// console.log('current ', this.searchFood);
+			// console.log('last ', this.lastSearch);
+			if(this.searchFood !== this.lastSearch){
+				this.foodList = [];
+				this.next = null;
+			}
 			if(this.searchFood){
+				this.lastSearch = this.searchFood;
 				this.next = this.next || 1;
 				let bodyFormData = new FormData();
 				bodyFormData.set('query[count_on_page]', 25);
@@ -76,7 +88,18 @@ export const app = {
 		},
 		moreHandler(){
 			this.searchHandler();
+		},
+		tableAddHandler(e){
+			const foodAdd = this.foodList[e.currentTarget.dataset.id];
+			foodAdd.weight = '100';
+			this.table.push(foodAdd)
+			this.searchFood = '';
+			this.foodList = [];
+			// this.table.push(this.foodList[e.currentTarget.dataset.id]);
 		}
+	},
+	mounted(){
+		// console.log(this.nutrientsTitles);
 	},
 	template: `
 		<v-app id="inspire">
@@ -132,19 +155,52 @@ export const app = {
 				  class="fill-height"
 				>
 				  <v-col
+					:md="8">
+					<v-simple-table>
+						<template v-slot:default>
+						  <thead>
+							<tr>
+							  <th class="text-left">Еда</th>
+							  <th class="text-left">{{nutrientsTitles['11'].name}}</th>
+							  <th class="text-left">{{nutrientsTitles['13'].name}}, {{nutrientsTitles['13'].unit}}</th>
+							  <th class="text-left">{{nutrientsTitles['14'].name}}, {{nutrientsTitles['14'].unit}}</th>
+							  <th class="text-left">{{nutrientsTitles['15'].name}}, {{nutrientsTitles['15'].unit}}</th>
+							  <th class="text-left">Сколько</th>
+							  <th class="text-left"></th>
+							</tr>
+						  </thead>
+						  <tbody>
+							<tr v-for="food in table" :key="food.id"
+								v-if="table.length"
+							>
+							  <td>
+								<b> {{food.name}} </b>
+							  </td>
+							  <td>{{ food.nutrientsShort['11'] }}</td>
+							  <td>{{ food.nutrientsShort['13'] }}</td>
+							  <td>{{ food.nutrientsShort['14'] }}</td>
+							  <td>{{ food.nutrientsShort['15'] }}</td>
+							  <td>{{ food.weight }}</td>
+							  <td><v-icon>mdi-close</v-icon></td>
+							</tr>
+						  </tbody>
+						</template>
+					  </v-simple-table>
+				  </v-col>
+				  <v-col
 					:md="4"
 					class="text-start">
-					<form>
+					<form @submit.prevent="">
 					  <v-text-field
 						  v-model="searchFood"
 						  @input="searchHandler"
-						  label="Добавить на стол"
-						  required
+						  label="Ввод тут"
+						  append-icon="mdi-close"
 						></v-text-field>
 					</form>
 					<div v-show="!searchFood.length">
 						<v-chip outlined>
-							Наложи еды на стол
+							Напиши название еды
 						</v-chip>
 					</div>
 					<div v-show="isLoading">
@@ -169,31 +225,33 @@ export const app = {
 					</div>
 					<v-list 
 						class="overflow-y-auto overflow-x-auto"
-						style="max-height: 500px"
+						style="max-height: 350px"
+						v-if="!isLoading"
 						>
-					  <v-list-item-group v-model="focusedItem">
-						<v-list-item three-line
-						  v-for="(food, i) in foodList"
-						  :key="food.props.id"
-						>
-						  <v-list-item-content>
-							<v-list-item-title>
-								<b> {{food.name|shortName}} </b>
-							</v-list-item-title>
-							<v-list-item-subtitle>
-								<b>{{food.props.name_group}}</b>  
-							</v-list-item-subtitle>
-							<v-list-item-subtitle>
-							  {{food.nutrientsShort|PFCtitles}}
-							</v-list-item-subtitle>
-						  </v-list-item-content>
-						  <v-btn fab small depressed rigth
-							color="cyan lighten-4"
-							dark>
-								<v-icon>mdi-plus</v-icon>
-							</v-btn>
-						</v-list-item>
-					  </v-list-item-group>
+					<v-list-item three-line
+					  v-for="(food, i) in foodList"
+					  :key="food.props.id"
+					>
+					  <v-list-item-content>
+						<v-list-item-title>
+							<b> {{food.name|shortName}} </b>
+						</v-list-item-title>
+						<v-list-item-subtitle>
+							<b>{{food.props.name_group}}</b>  
+						</v-list-item-subtitle>
+						<v-list-item-subtitle>
+						  {{food.nutrientsShort|PFCtitles}}
+						</v-list-item-subtitle>
+					  </v-list-item-content>
+					  <v-btn fab small depressed rigth
+						color="cyan lighten-4"
+						dark
+						:data-id="i"
+						@click="tableAddHandler"
+					  >
+							<v-icon>mdi-plus</v-icon>
+					  </v-btn>
+					</v-list-item>
 					  <v-list-item
 						v-show="next && searchFood.length">
 						<v-list-item-content>
@@ -204,10 +262,6 @@ export const app = {
 						</v-list-item-content>
 					  </v-list-item>
 					</v-list>
-				  </v-col>
-				  <v-col
-					:md="8">
-				  
 				  </v-col>
 				</v-row>
 			  </v-container>
